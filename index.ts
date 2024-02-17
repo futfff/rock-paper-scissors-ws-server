@@ -2,10 +2,14 @@ import express from "express";
 import { Server } from "socket.io";
 import * as http from "http";
 import cors from "cors";
+import { MatchMakingService } from "./matchMakingService";
 
 const app = express();
 const PORT = 3001;
 const server = http.createServer(app);
+
+const MatchMakingClient = new MatchMakingService()
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -41,6 +45,16 @@ io.on("connection", (socket) => {
   socket.on("leaveRoom", (data) => {
     socket.leave(data);
   });
+
+  socket.on("joinMatchMaking" , (data) => {
+    MatchMakingClient.join(data)
+  })
+
+  socket.on('leaveMatchMaking' , (data) => {
+    MatchMakingClient.leave(data)
+  })
+
+  createHandler('ping')
 });
 
-app.listen(PORT, () => console.log("started: " + PORT));
+server.listen(PORT, () => console.log("started: " + PORT));
