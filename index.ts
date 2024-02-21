@@ -8,13 +8,13 @@ const app = express();
 const PORT = 3001;
 const server = http.createServer(app);
 
-const MatchMakingClient = new MatchMakingService()
-
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
   },
 });
+
+const MatchMakingClient = new MatchMakingService(io);
 
 app.use(
   cors({
@@ -46,15 +46,15 @@ io.on("connection", (socket) => {
     socket.leave(data);
   });
 
-  socket.on("joinMatchMaking" , (data) => {
-    MatchMakingClient.join(data)
-  })
+  socket.on("joinMatchMaking", (data) => {
+    console.log("join: ", data.user);
+    MatchMakingClient.join(data.user);
+  });
 
-  socket.on('leaveMatchMaking' , (data) => {
-    MatchMakingClient.leave(data)
-  })
-
-  createHandler('ping')
+  socket.on("leaveMatchMaking", (data) => {
+    console.log("leave: ", data.id);
+    MatchMakingClient.leave(data.id);
+  });
 });
 
 server.listen(PORT, () => console.log("started: " + PORT));
