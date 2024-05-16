@@ -9,6 +9,8 @@ interface UserDtoI {
   rating: number;
 }
 
+//sorry
+
 interface MatchMakingServiceI {
   users: UserDtoI[];
   createGame: (firstUserId: number, secondUserId: number) => void;
